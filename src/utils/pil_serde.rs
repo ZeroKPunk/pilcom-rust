@@ -3,16 +3,16 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Pil {
+pub struct Pil {
     #[serde(rename = "nCommitments")]
-    n_commitments: u64,
+    pub n_commitments: u64,
     #[serde(rename = "nQ")]
     n_q: u64,
     #[serde(rename = "nIm")]
     n_im: u64,
     #[serde(rename = "nConstants")]
-    n_constants: u64,
-    references: HashMap<String, PilReference>,
+    pub n_constants: u64,
+    pub references: HashMap<String, PilReference>,
     #[serde(rename = "publics")]
     public: Vec<PilPublic>,
     #[serde(rename = "expressions")]
@@ -82,14 +82,16 @@ struct PilPublic {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct PilReference {
+pub struct PilReference {
     #[serde(rename = "type")]
-    reference_type: String,
-    id: u64,
+    pub reference_type: String,
+    pub id: u64,
     #[serde(rename = "polDeg")]
-    pol_deg: u64,
+    pub pol_deg: u64,
     #[serde(rename = "isArray")]
-    is_array: bool,
+    pub is_array: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub len: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -134,9 +136,17 @@ impl Pil {
 #[cfg(test)]
 mod test {
     use super::Pil;
-
     #[test]
     fn test_load_from_json_file() {
+        println!("Start Parsing Pil");
         let _ = Pil::from_json_file("test_data/pil/main.pil.json").unwrap();
+        let _ = Pil::from_json_file("test_data/pil/main_2.pil.json").unwrap();
+        println!("End Parsing Pil");
+    }
+
+    #[test]
+    fn test_pol_array() {
+        let pil = Pil::from_json_file("test_data/pil/main.pil.json").unwrap();
+
     }
 }
