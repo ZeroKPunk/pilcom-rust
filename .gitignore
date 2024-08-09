@@ -1,1 +1,10 @@
-/target
+target/
+zkevm.const
+zkevm.commit
+test_data/
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target

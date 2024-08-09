@@ -1,4 +1,5 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File};
+use fields::field_gl::Fr as FGL;
 
 use super::pil_serde::Pil;
 
@@ -51,6 +52,7 @@ type PolProxyType = HashMap<NameSpace, HashMap<NamePol, PolProxy>>;
 type DefType = HashMap<NameSpace, HashMap<NamePol, Vec<DefArrayElement>>>;
 
 pub struct PolArray {
+    pub n: u64,
     pub n_pols: u64,
     pub def: DefType,
     pub def_array: Vec<DefArrayElement>,
@@ -81,8 +83,7 @@ impl PolArray {
 
         let mut def_array = vec![DefArrayElement::default(); (def_array_len + 1) as usize];
         let mut def: DefType = Default::default();
-        let mut array: Vec<Vec<DefArrayElement>> =
-            vec![vec![DefArrayElement::default(); 0]; def_array_len as usize];
+        let mut array: Vec<Vec<FGL>> = (0..n_pols).map(|_| vec![FGL::default(); n_pols as usize]).collect();
 
         for ref_name in pil_ref.keys() {
             let _pil_ref = pil_ref.get(ref_name).unwrap();
@@ -94,7 +95,7 @@ impl PolArray {
                         for i in 0.._pil_ref.len.unwrap() {
                             // let pol_pr =
                             //     vec![DefArrayElement::default(); _pil_ref.pol_deg as usize];
-                            let pol_pr: Vec<DefArrayElement> =
+                            let pol_pr: Vec<FGL> =
                                 Vec::with_capacity(_pil_ref.pol_deg as usize);
                             pol_proxy
                                 .entry(name_space.to_string())
@@ -168,14 +169,22 @@ impl PolArray {
                 panic!("Invalid pils sequence");
             }
         }
+        n_pols = def_array.len() as u64;
 
         PolArray {
+            n: if def_array.len() > 0 { def_array[0].pol_deg } else { 0 },
             n_pols,
             def,
             def_array,
             array,
             pol_proxy,
         }
+    }
+
+    pub fn load_from_file(&self, file_path: &str) {
+
+        let reader = File::open(file_path).unwrap();
+
     }
 }
 
